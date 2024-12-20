@@ -1,4 +1,4 @@
-# Transmittance2FOM-GenModels
+# Transmittance Map to Fiber Orientation Map with Generative Models
 
 ![transmittance_fom_maps](./images/transmittance_fom_maps.jpg)
 
