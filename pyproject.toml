@@ -6,8 +6,13 @@ authors = ["floriankark <florian.kark@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.12"
+h5py = "^3.12.1"
+numpy = "1.26.4"
+matplotlib = "^3.9.2"
 
+[tool.poetry.group.dev.dependencies]
+ipykernel = "^6.29.5"
 
 [build-system]
 requires = ["poetry-core"]
