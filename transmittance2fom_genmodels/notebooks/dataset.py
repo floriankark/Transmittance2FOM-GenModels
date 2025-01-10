@@ -3,6 +3,7 @@ import h5py
 import random
 from torch.utils.data import Dataset, Sampler, DataLoader
 
+
 class HDF5Dataset(Dataset):
     def __init__(self, file_path: str, transform=None) -> None:
         self.file_path = file_path
@@ -84,8 +85,3 @@ def create_dataloader(hdf5_file_path: str, brains: list[str], tile_size: int = 6
     sampler = HDF5Sampler(hdf5_file_path, brains, tile_size, tiles_per_epoch)
     dataloader = DataLoader(dataset, batch_size=batch_size, sampler=sampler, num_workers=num_workers)
     return dataloader
-
-# Example usage
-# hdf5_file_path = "path_to_hdf5_file.h5"
-# brains = ["Vervet1818", "Vervet1947"]
-# dataloader = create_dataloader(hdf5_file_path, brains)
