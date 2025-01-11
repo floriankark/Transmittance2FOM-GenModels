@@ -1,25 +1,29 @@
 import torch
 import h5py
 import random
+from collections import namedtuple
 from torch.utils.data import Dataset, Sampler, DataLoader
+from config.path import VERVET_DATA
 
+Tile = namedtuple('Tile', 'brain, section, region, map_type, row, column, patch_size')
 
 class HDF5Dataset(Dataset):
     def __init__(self, file_path: str, transform=None) -> None:
         self.file_path = file_path
         self.transform = transform
 
-    def _open_hdf5(self):
-        if not hasattr(self, "_hf"):
-            self._hf = h5py.File(self.file_path, "r")
+    def _open_hdf5(self, loc: Tile):#
+        file_path = '_'.join(filter(loc[:4]))
+        print(file_path)
+        """if not hasattr(self, "_hf"):
+            self._hf = h5py.File(VERVET_DATA / f"{file_path}.h5", "r")"""
 
     def __len__(self) -> int:
         return 1
 
-    def __getitem__(self, idx: tuple) -> torch.Tensor:
-        brain, section, region, map_type, row, column, patch_size = idx
+    def __getitem__(self, loc: Tile) -> torch.Tensor:
 
-        self._open_hdf5()
+        self._open_hdf5(loc)
 
         dataset_name = f"{map_type}/{section}/{region}"
         image = self._hf[brain][dataset_name]
