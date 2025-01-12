@@ -1,16 +1,15 @@
-from dataset import HDF5Dataset, HDF5Sampler
-from config.path import VERVET_FOM_DATA, VERVET_TRANS_DATA
-from collections import namedtuple
+from dataset import HDF5Dataset, HDF5Sampler, create_dataloader
+from torch.utils.data import DataLoader
+from config.path import VERVET_DATA
 
-Tile = namedtuple('Tile', 'brain, section, region, map_type, row, column, patch_size')
-
-tile = Tile(
-    brain='brain1',
-    section='section1',
-    region='region1',
-    map_type='fom',
-    row=0,
-    column=0,
-    patch_size=256
-)
-print(HDF5Dataset._open_hdf5(tile))
+"""dataset = HDF5Dataset()
+sampler = HDF5Sampler(brain='Vervet1818', map_type='NTransmittance', patch_size=256)
+dataloader = DataLoader(dataset, batch_size=1, sampler=sampler)
+for batch in dataloader:
+    print(batch)
+    break"""
+    
+dataloader = create_dataloader(brain='Vervet1818', map_type='NTransmittance', patch_size=256)
+for batch in dataloader:
+    print(batch)
+    break

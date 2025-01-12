@@ -7,34 +7,10 @@ from torch.utils.data import Dataset, Sampler, DataLoader
 from config.path import VERVET_DATA
 
 Tile = namedtuple('Tile', 'brain, section, region, map_type, row, column, patch_size')
+resolution_level = '05' # TODO: Make this part of a config file
 
 class HDF5Dataset(Dataset):
-    """
-    Args:
-        resolution_level (str): "01", "02", ..., "10" downsampled version of the original image by a factor of 2^n
-    
-    Returns:
-        patch (torch.Tensor): A tensor of shape (C, H, W) 
-        
-    Example usage:
-    from dataset import HDF5Dataset, HDF5Sampler, Tile
-    from config.path import VERVET_DATA
-
-    tile = Tile(
-        brain='Vervet1818',
-        section='s0759',
-        region='left',
-        map_type='NTransmittance',
-        row=0,
-        column=0,
-        patch_size=256
-    )
-
-    dataset = HDF5Dataset(resolution_level='05')
-    print(dataset[tile])
-    """
-    def __init__(self, resolution_level: str, transform=None) -> None:
-        self.resolution_level = resolution_level
+    def __init__(self, transform=None) -> None:
         self.transform = transform
         
     def _open_hdf5(self, loc: Tile):
@@ -51,7 +27,7 @@ class HDF5Dataset(Dataset):
 
     def __getitem__(self, loc: Tile) -> torch.Tensor:
         self._open_hdf5(loc)
-        image = self._hf["pyramid"][self.resolution_level]
+        image = self._hf["pyramid"][resolution_level]
         patch = image[loc.row:loc.row + loc.patch_size, loc.column:loc.column + loc.patch_size]
         
         if loc.map_type == "FOM":
@@ -68,50 +44,48 @@ class HDF5Dataset(Dataset):
 
 
 class HDF5Sampler(Sampler):
-    def __init__(self, file_path: str, brains: list[str], tile_size: int, tiles_per_epoch: int) -> None:
-        self.file_path = file_path
-        self.brains = brains
-        self.tile_size = tile_size
+    def __init__(self, brain: str, map_type: str, patch_size: int, tiles_per_epoch: int = 1000) -> None:
+        self.brain = brain
+        self.map_type = map_type
+        self.patch_size = patch_size
         self.tiles_per_epoch = tiles_per_epoch
-        self._hf = None
 
-    def _open_hdf5(self):
-        if not self._hf:
-            self._hf = h5py.File(self.file_path, "r")
+    def _open_hdf5(self, file_path: str):
+        if not hasattr(self, "_hf"):
+            self._hf = h5py.File(file_path, "r")
 
     def __len__(self) -> int:
         return self.tiles_per_epoch
 
     def __iter__(self):
-        self._open_hdf5()
-        samples = []
-
+        tiles = []
+        
         for _ in range(self.tiles_per_epoch):
-            brain = random.choice(self.brains)
-            section = random.choice(list(self._hf[brain].keys()))
-            region = random.choice(["left", "right", "cerebellum", "none"])
-            map_type = random.choice(["fom", "transmittance"])
-
-            dataset_name = f"{map_type}/{section}/{region}"
-            if dataset_name not in self._hf[brain]:
-                continue
-
-            image = self._hf[brain][dataset_name]
-            rows, cols = image.shape[:2]
-
-            if rows < self.tile_size or cols < self.tile_size:
-                continue
-
-            row = random.randint(0, rows - self.tile_size)
-            column = random.randint(0, cols - self.tile_size)
-
-            samples.append((brain, section, region, map_type, row, column, self.tile_size))
-
-        return iter(samples)
+            files = glob.glob(f"{VERVET_DATA}/{self.brain}*{self.map_type}*.h5")
+            file_path = random.choice(files)
+            section, region = file_path.split("_")[1:3]
+                    
+            self._open_hdf5(file_path)
+            row_len, col_len = self._hf["pyramid"][resolution_level].shape
+            row_range = row_len - self.patch_size
+            col_range = col_len - self.patch_size
+            row, col = random.randint(0, row_range), random.randint(0, col_range)
+            
+            tiles.append(Tile(self.brain, section, region, self.map_type, row, col, self.patch_size))
+            
+        return iter(tiles)
 
 
-def create_dataloader(hdf5_file_path: str, brains: list[str], tile_size: int = 64, batch_size: int = 8, tiles_per_epoch: int = 1000, num_workers: int = 0):
-    dataset = HDF5Dataset(hdf5_file_path)
-    sampler = HDF5Sampler(hdf5_file_path, brains, tile_size, tiles_per_epoch)
+def create_dataloader(brain: str, 
+                      map_type: str, 
+                      patch_size: int = 64, 
+                      batch_size: int = 8, 
+                      tiles_per_epoch: int = 1000, 
+                      num_workers: int = 0, 
+                      transform=None,
+                      ) -> DataLoader:
+    
+    dataset = HDF5Dataset(transform=transform)
+    sampler = HDF5Sampler(brain=brain, map_type=map_type, patch_size=patch_size, tiles_per_epoch=tiles_per_epoch) 
     dataloader = DataLoader(dataset, batch_size=batch_size, sampler=sampler, num_workers=num_workers)
     return dataloader
