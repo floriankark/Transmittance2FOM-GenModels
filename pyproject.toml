@@ -11,7 +11,11 @@ h5py = "^3.12.1"
 numpy = "2.2.1"
 matplotlib = "^3.9.2"
 ipywidgets = "^8.1.5"
+<<<<<<< HEAD
 torch = ">=2.5.1"
+=======
+torch = "^2.5.1"
+>>>>>>> c3f699182b12767caa619c556b6712ac202225d7
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.29.5"
