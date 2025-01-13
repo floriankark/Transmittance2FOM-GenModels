@@ -9,7 +9,7 @@ from config.path import VERVET_DATA
 import numpy as np
 
 Tile = namedtuple('Tile', 'brain, section, region, map_type, row, column, patch_size')
-resolution_level = '05' # TODO: Make this part of a config file
+resolution_level = '06' # TODO: Make this part of a config file
 
 class HDF5Dataset(Dataset):
     def __init__(self, transform=None) -> None:
