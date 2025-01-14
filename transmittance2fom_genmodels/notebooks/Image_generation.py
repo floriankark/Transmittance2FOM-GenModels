@@ -172,6 +172,7 @@ def train_WGAN(epochs = 30, batch_size = 8, Tile_size = 64, lr_d = 0.0001, lr_g 
                 optimizer_G.step()
 
         print(f"Epoch {epoch+1}/{epochs} | Critic Loss: {c_loss.item():.4f} | Generator Loss: {g_loss.item():.4f}")
+    return generator, critic
 
 
 
