@@ -5,21 +5,11 @@ import random
 import glob
 from collections import namedtuple
 from torch.utils.data import Dataset, Sampler, DataLoader
-from config.path import VERVET_DATA
 import numpy as np
-from typing import Dict
 
 Tile = namedtuple('Tile', 'brain, section, region, map_type, row, column, patch_size')
 resolution_level = '06' # TODO: Make this part of a config file
 
-import os
-import torch
-import h5py
-import random
-import glob
-from collections import namedtuple
-from torch.utils.data import Dataset, Sampler, DataLoader
-import numpy as np
 
 class PairedHDF5Dataset(Dataset):
     def __init__(self, data_dir, transform=None) -> None:
@@ -33,7 +23,7 @@ class PairedHDF5Dataset(Dataset):
             file_name = '_'.join(filter(None, [loc.brain, loc.section, loc.region, "FOM_HSV"]))
             file_path = os.path.join(self.data_dir, "fom", f"{file_name}.h5")
         else:
-            # For transmittance, we don't include the FOM suffix
+            
             file_name = '_'.join(filter(None, [loc.brain, loc.section, loc.region]))
             file_path = os.path.join(self.data_dir, "transmittance", f"{file_name}.h5")
             
@@ -74,7 +64,7 @@ class PairedHDF5Dataset(Dataset):
         if fom_patch.shape[:2] != (loc.patch_size, loc.patch_size):
             fom_patch = pad_patch(fom_patch, loc.patch_size)
         if trans_patch.shape != (loc.patch_size, loc.patch_size):
-            trans_patch = pad_patch(trans_patch, loc.patch_size, is_transmittance=True)
+            trans_patch = pad_patch(trans_patch, loc.patch_size)
         
         # Process FOM patch
         fom_patch = fom_patch.transpose(2, 0, 1)
@@ -163,3 +153,4 @@ def pad_patch(patch, target_size):
     pad_height = max(0, target_size - patch.shape[0])
     pad_width = max(0, target_size - patch.shape[1])
     return np.pad(patch, ((0, pad_height), (0, pad_width), (0, 0)), mode='constant')
+
