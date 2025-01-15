@@ -13,6 +13,8 @@ matplotlib = "^3.9.2"
 ipywidgets = "^8.1.5"
 torch = "^2.5.1"
 torchvision = "^0.20.1"
+tqdm = "^4.67.1"
+scipy = "^1.15.1"
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.29.5"
