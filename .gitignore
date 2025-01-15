@@ -2,8 +2,6 @@ data/
 .venv
 data_dep/
 
-storage/GAN/*
-storage/WGAN/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
