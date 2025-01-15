@@ -3,6 +3,9 @@ data/
 data_dep/
 
 
+storage/image2image/*
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
