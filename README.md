@@ -22,6 +22,9 @@ if poetry not installed download it
 - `poetry shell` start virtual environment
 - `poetry add [package]` add new package
 
-## Load Data
+## Dataset
+The original [dataset](https://search.kg.ebrains.eu/instances/79db19fa-41bd-4292-9a33-e0e79dc9a9aa) is publicly available via the EBRAINS platform of the Human Brain Project (Axer et al., 2020; [https://doi.org/10.25493/AFR3-KDK](https://doi.org/10.25493/AFR3-KDK)).
 
-load data from [source](https://fz-juelich.sciebo.de/s/F7jJcSj1le1pFeY)
+Reference:
+
+Axer, M., Gräßel, D., Palomero-Gallagher, N., Takemura, H., Jorgensen, M. J., Woods, R., & Amunts, K. (2020). Images of the nerve fiber architecture at micrometer-resolution in the vervet monkey visual system [Data set]. EBRAINS. https://doi.org/10.25493/AFR3-KDK
